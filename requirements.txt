@@ -3,3 +3,4 @@ librosa
 torch
 scipy
 matplotlib
+tensorflow
