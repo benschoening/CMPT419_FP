@@ -1,9 +1,5 @@
 # CMPT419_FP
-Improving audio-text communication: Using AI models to classify feelings as emoji in short audio messages
-
-# If needed to change python in env
-https://www.askpython.com/python/examples/change-the-python-version-conda
-
+Improving audio-text communication: Using AI models to classify social signals as emoji in short audio messages
 
 # Environment Setup:
 conda create --name CMPT419_FP python=3.8
@@ -42,3 +38,11 @@ dataset_key.pdf
 
 # Data Description:
 Refer to dataset_key.pdf
+
+# Challenges
+1. Data availability: finding and collecting data proved to be challenging, by the amount of time to find specific examples of each social signal. One example of this challenge is not being able to find enough data for 'smugness', where we had to change our social signal to a more broader signal of confidence
+2. Classification: had to use different hyperparameters, models, data, and audio techniques to find best result
+
+
+# Sources
+https://medium.com/@joshiprerak123/transform-your-audio-denoise-and-enhance-sound-quality-with-python-using-pedalboard-24da7c1df042
