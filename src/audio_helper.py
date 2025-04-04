@@ -64,26 +64,13 @@ def load_dataset(data_dir, duration = 10.0, sample_rate=22050, n_mfcc=20):
     return np.array(mfcc), np.array(labels)
 
 
-data_dir = 'data'
-mfcc, labels = load_dataset(data_dir, duration=10.0, sample_rate=22050, n_mfcc=20)
-print(labels)
-
-''' Tensorflow
-le = LabelEncoder()
-y_encoded = le.fit_transform(labels)
-y_onehot = to_categorical(y_encoded)
-print("Classes:", le.classes_)
-print("X shape:", mfcc.shape)  # Expecting (num_samples, time_steps, n_mfcc)
-print("y shape:", y_onehot.shape)
-'''
-
 class AudioDataset(Dataset):
-    def __init__(self, data, labels):
+    def __init__(self, data):
         self.data = torch.tensor(data, dtype=torch.float32)
-        self.labels = torch.tensor(labels, dtype=torch.long)
+        #self.labels = torch.tensor(labels, dtype=torch.int8)
     
     def __len__(self):
         return len(self.data)
     def __getitem__(self, idx):
-        return self.data[idx], self.labels[idx]
+        return self.data[idx], self.data[idx] #input and target, no labels returned
 
