@@ -65,9 +65,9 @@ def load_dataset(data_dir, duration = 10.0, sample_rate=22050, n_mfcc=20):
 
 
 class AudioDataset(Dataset):
-    def __init__(self, data):
+    def __init__(self, data, labels):
         self.data = torch.tensor(data, dtype=torch.float32)
-        #self.labels = torch.tensor(labels, dtype=torch.int8)
+        self.labels = torch.tensor(labels, dtype=torch.long)
     
     def __len__(self):
         return len(self.data)

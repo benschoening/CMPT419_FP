@@ -11,6 +11,7 @@ from audio_helper import *
 from autoencoder import *
 from sklearn.preprocessing import LabelEncoder
 import torch.optim as optim
+import matplotlib.pyplot as plt
 #/imports
 
 #Data loader
@@ -22,22 +23,22 @@ mfcc, labels = load_dataset(data_dir, duration=10.0, sample_rate=22050, n_mfcc=2
 le = LabelEncoder()
 int_labels = le.fit_transform(labels)
 
-dataset = AudioDataset(mfcc)
+dataset = AudioDataset(mfcc, int_labels)
 
-dataloader = DataLoader(dataset, batch_size=8, shuffle=True)
+dataloader = DataLoader(dataset, batch_size=8, shuffle=False)
 
 #Data Augmentation??????
 
 #-----------------------
 
 #Hyper parameters
-learning_rate = 0.001
-epoch = 5
+learning_rate = 0.01
+epoch = 25
 n_mfcc = 20
 seq_len = 431  #dependent on duration
 hidden_dim = 64
 latent_dim = 30
-num_layers = 1
+num_layers = 2
 
 
 #Create model
@@ -71,6 +72,27 @@ for i in range(epoch):
     epoch_loss = running_loss / len(dataset)
     print(f"Epoch {i+1}/{epoch} - Loss: {epoch_loss:.4f}")
 
+
+#Visualization and Evaluation (Scatter Plot)
+
+model.eval()
+latent_list = []
+
+with torch.no_grad():
+    for inputs, labels in dataloader:
+        inputs = inputs.to(device)
+
+        _, latent = model(inputs) #encoder latent representations
+        latent_list.append(latent.cpu().numpy()) #np arrays
+latents = np.concatenate(latent_list, axis=0)
+
+plt.figure(figsize=(8, 6))
+scatter = plt.scatter(latents[:, 0], latents[:, 1], c=int_labels, cmap='viridis', alpha=0.7)
+plt.colorbar(scatter)
+plt.title(f"Latent Space at Epoch {epoch}")
+plt.xlabel("Latent Dimension 1")
+plt.ylabel("Latent Dimension 2")
+plt.show()
 
 
 
