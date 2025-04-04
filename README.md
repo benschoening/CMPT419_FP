@@ -31,3 +31,14 @@ data/
 
 src/
      audio_helper.py
+
+requirements.txt
+
+README.md
+
+dataset_key.pdf
+
+
+
+# Data Description:
+Refer to dataset_key.pdf
