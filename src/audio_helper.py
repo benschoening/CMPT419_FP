@@ -17,26 +17,36 @@ from sklearn.preprocessing import LabelEncoder
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
+import noisereduce as nr
+import random
 #/Imports
 
 #MFCCs of audio files (with 20 features returned)
 #No need to pre-process since using mfcc at the moment
-def mfcc_wav(filepath, duration = 10.0, sample_rate = 22050, n_mfcc = 20):
+def mfcc_wav(filepath, duration = 5.0, sample_rate = 22050, n_mfcc = 20):
 
     target_length = int(sample_rate * duration)
 
-    #loads wav
+    #loads wav with exception e
     try:
         audio, sr = librosa.load(filepath, sr=sample_rate)
     except Exception as e:
         print(f"Error loading {filepath}: {e}")
         return None
     
+    #Using Noise Reduce to take out any background noise to enhance classification
+    noise_profile = audio[:int(0.5 * sr)]  #first 0.5 second silent removed
+    audio = nr.reduce_noise(y=audio, sr=sr, y_noise=noise_profile)
+    
     #Target length acquired
     if len(audio) < target_length:
         audio = np.pad(audio, (0, target_length - len(audio)), mode='constant')
     else:
-        audio = audio[:target_length]
+        #audio = audio[:target_length] #First _ seconds of audio
+
+        max_start = len(audio) - target_length #random selection of audio
+        start_idx = random.randint(0, max_start)
+        audio = audio[start_idx:start_idx + target_length]
     
     #outputs mfcc associated with sound
     mfcc = librosa.feature.mfcc(y=audio, n_mfcc=n_mfcc)
