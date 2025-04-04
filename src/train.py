@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 #Data loader
 data_dir = 'data'
-mfcc, labels = load_dataset(data_dir, duration=10.0, sample_rate=22050, n_mfcc=20)
+mfcc, labels = load_dataset(data_dir, duration=5.0, sample_rate=22050, n_mfcc=20)
 
 
 #Encoding string labels to int vals
@@ -35,10 +35,10 @@ dataloader = DataLoader(dataset, batch_size=8, shuffle=False)
 learning_rate = 0.01
 epoch = 25
 n_mfcc = 20
-seq_len = 431  #dependent on duration
+seq_len = 216  #dependent on duration
 hidden_dim = 64
 latent_dim = 30
-num_layers = 2
+num_layers = 3
 
 
 #Create model

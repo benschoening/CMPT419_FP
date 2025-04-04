@@ -46,3 +46,9 @@ Refer to dataset_key.pdf
 
 # Sources
 https://medium.com/@joshiprerak123/transform-your-audio-denoise-and-enhance-sound-quality-with-python-using-pedalboard-24da7c1df042
+
+# Potential ideas
+- add chroma features (chroma = librosa.feature.chroma_stft(y=audio, sr=sr))
+- add spectral contrast (contrast = librosa.feature.spectral_contrast(y=audio, sr=sr))
+- add zero crossing rate (zcr = librosa.feature.zero_crossing_rate(audio))
+- add deltas of MFCC (delta_mfcc = librosa.feature.delta(mfcc), delta2_mfcc = librosa.feature.delta(mfcc, order=2)))
