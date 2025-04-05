@@ -1,6 +1,8 @@
 # CMPT419_FP
 Improving audio-text communication: Using AI models to classify social signals as emoji in short audio messages
 
+- Goal to select audio social signals, categorize them into different categories (using a LSTM autoencoder), and have users interact and validate the classification based on the emoji presented
+
 # Environment Setup:
 conda create --name CMPT419_FP python=3.8
 conda activate CMPT419_FP
@@ -46,6 +48,8 @@ Refer to dataset_key.pdf
 
 # Sources
 https://medium.com/@joshiprerak123/transform-your-audio-denoise-and-enhance-sound-quality-with-python-using-pedalboard-24da7c1df042
+https://pythonguides.com/python-tkinter-image/
+
 
 # Potential ideas
 - add chroma features (chroma = librosa.feature.chroma_stft(y=audio, sr=sr))
