@@ -14,10 +14,11 @@ from sklearn.preprocessing import LabelEncoder
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-from sklearn.metrics import adjusted_rand_score, silhouette_score
+from sklearn.metrics import adjusted_rand_score, silhouette_score, confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
+import seaborn as sns
 #/imports
 
 #-----------------------Data loader for autoencoder--------------------------------------
@@ -45,7 +46,7 @@ def train_autoencoder():
 
     #Hyper parameters (plus batch size above)
     learning_rate = 0.001
-    epoch = 10
+    epoch = 15
     num_feats = 43 #32 with chroma, 39 with contrast + chroma, 43 for all (displayed as n_mfcc in other files)
     seq_len = 216  #dependent on duration
     hidden_dim = 64
@@ -144,7 +145,7 @@ feats_normalized = [scaler.transform(seq) for seq in mfcc]
 
 #Encoding string labels to int vals
 le = LabelEncoder()
-int_labels = le.fit_transform(labels)
+int_labels = le.fit_transform(labels) 
 
 #Train-Split
 X_train, X_val, y_train, y_val = train_test_split(feats_normalized, int_labels, test_size=0.2, stratify=int_labels)
@@ -165,7 +166,7 @@ def train_DNN():
     hidden_dim = 128
     num_layers = 4
     n_classes = 5
-    learning_rate = 0.0001
+    learning_rate = 0.0010
     epochs = 50
     dropout = 0.2
 
@@ -214,9 +215,27 @@ def train_DNN():
             outputs = model(inputs)
             preds = torch.argmax(outputs, dim=1)
             all_preds.extend(preds.cpu().numpy())
-            all_labels.extend(labels.numpy())
+            all_labels.extend(labels.cpu().numpy())
 
-    print(classification_report(all_labels, all_preds))
+    #Convert to numpy arrays
+    all_labels = np.array(all_labels)
+    all_preds = np.array(all_preds)
+
+    class_names = le.classes_
+
+    print(classification_report(all_labels, all_preds, target_names=class_names))
+
+    #CONFUSION MATRIX
+    cm = confusion_matrix(all_labels, all_preds)
+    plt.figure(figsize=(8,6))
+    sns.heatmap(cm, annot=True, fmt='d', xticklabels=class_names, yticklabels=class_names, cmap='Blues')
+    plt.title("Confusion Matrix")
+    plt.ylabel("True Label")
+    plt.xlabel("Predicted Label")
+    plt.savefig("results/DNN_confusion_matrix.png")
+
+
 #-------------------------------------------------------------------------------
 
-train_DNN()
+
+train_autoencoder()

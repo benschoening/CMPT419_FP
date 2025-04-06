@@ -112,13 +112,16 @@ class AudioDataset1(Dataset):
 #DNN DATASAT
 class AudioDataset2(Dataset):
     def __init__(self, data, labels):
-        self.data = torch.tensor(data, dtype=torch.float32)
-        self.labels = torch.tensor(labels, dtype=torch.long)
+        self.data = data #torch.tensor(data, dtype=torch.float32)
+        self.labels = labels #torch.tensor(labels, dtype=torch.long)
     
     def __len__(self):
 
         return len(self.data)
     
     def __getitem__(self, idx):
+
+        x=torch.tensor(self.data[idx], dtype=torch.float32)
+        y=torch.tensor(self.labels[idx], dtype=torch.long)
         
-        return self.data[idx], self.labels[idx]
+        return x, y #self.data[idx], self.labels[idx]
