@@ -12,6 +12,9 @@ from autoencoder import *
 from sklearn.preprocessing import LabelEncoder
 import torch.optim as optim
 import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score, silhouette_score
+from sklearn.preprocessing import StandardScaler
 #/imports
 
 #Data loader
@@ -19,11 +22,19 @@ data_dir = 'data'
 mfcc, labels = load_dataset(data_dir, duration=5.0, sample_rate=22050, n_mfcc=20)
 
 
+#Normalization of data
+all_mfcc = np.concatenate(mfcc, axis=0)
+scaler = StandardScaler().fit(all_mfcc)
+
+#scalar to each sequence
+mfcc_normalized = [scaler.transform(seq) for seq in mfcc]
+
+
 #Encoding string labels to int vals
 le = LabelEncoder()
 int_labels = le.fit_transform(labels)
 
-dataset = AudioDataset(mfcc, int_labels)
+dataset = AudioDataset(mfcc_normalized, int_labels)
 
 dataloader = DataLoader(dataset, batch_size=8, shuffle=False)
 
@@ -32,12 +43,12 @@ dataloader = DataLoader(dataset, batch_size=8, shuffle=False)
 #-----------------------
 
 #Hyper parameters
-learning_rate = 0.01
+learning_rate = 0.001
 epoch = 25
 n_mfcc = 20
 seq_len = 216  #dependent on duration
 hidden_dim = 64
-latent_dim = 30
+latent_dim = 10
 num_layers = 3
 
 
@@ -86,13 +97,35 @@ with torch.no_grad():
         latent_list.append(latent.cpu().numpy()) #np arrays
 latents = np.concatenate(latent_list, axis=0)
 
-plt.figure(figsize=(8, 6))
-scatter = plt.scatter(latents[:, 0], latents[:, 1], c=int_labels, cmap='viridis', alpha=0.7)
-plt.colorbar(scatter)
-plt.title(f"Latent Space at Epoch {epoch}")
-plt.xlabel("Latent Dimension 1")
-plt.ylabel("Latent Dimension 2")
-plt.show()
+#K-means and scores
+kmeans = KMeans(n_clusters=4)
+cluster_labels = kmeans.fit_predict(latents)
 
+ari = adjusted_rand_score(int_labels, cluster_labels)
+sil_score = silhouette_score(latents, cluster_labels)
+
+print(f"Adjusted Rand Index: {ari:.3f}")
+print(f"Silhouette Score: {sil_score:.3f}")
+
+
+
+fig, axes = plt.subplots(1, 2, figsize=(16, 6))  # 1 row, 2 columns
+
+#Cluster labels from K-Means
+scatter1 = axes[0].scatter(latents[:, 0], latents[:, 1], c=cluster_labels, cmap='viridis', alpha=0.7)
+axes[0].set_title(f"K-Means Clustering (Epoch {epoch})")
+axes[0].set_xlabel("Latent Dimension 1")
+axes[0].set_ylabel("Latent Dimension 2")
+fig.colorbar(scatter1, ax=axes[0], label="Cluster ID")
+
+#True labels
+scatter2 = axes[1].scatter(latents[:, 0], latents[:, 1], c=int_labels, cmap='viridis', alpha=0.7)
+axes[1].set_title(f"True Labels (Epoch {epoch})")
+axes[1].set_xlabel("Latent Dimension 1")
+axes[1].set_ylabel("Latent Dimension 2")
+fig.colorbar(scatter2, ax=axes[1], label="True Label")
+
+plt.tight_layout()
+plt.show()
 
 
