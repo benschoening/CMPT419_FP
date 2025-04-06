@@ -50,7 +50,29 @@ def mfcc_wav(filepath, duration = 5.0, sample_rate = 22050, n_mfcc = 20):
     
     #outputs mfcc associated with sound
     mfcc = librosa.feature.mfcc(y=audio, n_mfcc=n_mfcc)
-    return mfcc.T
+
+    #chroma, contrast plus combination
+    chroma = librosa.feature.chroma_stft(y=audio, sr=sr)
+    contrast = librosa.feature.spectral_contrast(y=audio, sr=sr)
+    rolloff = librosa.feature.spectral_rolloff(y=audio, sr=sr)
+    centroid = librosa.feature.spectral_centroid(y=audio, sr=sr)
+    zcr = librosa.feature.zero_crossing_rate(y=audio)
+    rms = librosa.feature.rms(y=audio)
+
+
+    min_frames = min(mfcc.shape[1], chroma.shape[1], contrast.shape[1])
+    mfcc = mfcc[:, :min_frames]
+    chroma = chroma[:, :min_frames]
+    contrast = contrast[:, :min_frames]
+    rolloff = rolloff[:, :min_frames]
+    centroid = centroid[:, :min_frames]
+    zcr = zcr[:, :min_frames]
+    rms = rms[:, :min_frames]
+
+    combined = np.vstack([mfcc, chroma, contrast, rolloff, centroid, zcr, rms]).T
+    #end 
+
+    return combined #mfcc.T
 
 def load_dataset(data_dir, duration = 10.0, sample_rate=22050, n_mfcc=20):
 

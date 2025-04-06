@@ -36,20 +36,16 @@ int_labels = le.fit_transform(labels)
 
 dataset = AudioDataset(mfcc_normalized, int_labels)
 
-dataloader = DataLoader(dataset, batch_size=8, shuffle=False)
-
-#Data Augmentation??????
-
-#-----------------------
+dataloader = DataLoader(dataset, batch_size=16, shuffle=False)
 
 #Hyper parameters
 learning_rate = 0.001
-epoch = 25
-n_mfcc = 20
+epoch = 10
+n_mfcc = 43 #32 with chroma, 39 with contrast + chroma, 43 for all
 seq_len = 216  #dependent on duration
 hidden_dim = 64
-latent_dim = 10
-num_layers = 3
+latent_dim = 16
+num_layers = 2
 
 
 #Create model
