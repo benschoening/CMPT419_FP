@@ -4,9 +4,20 @@ Improving audio-text communication: Using AI models to classify social signals a
 - Goal to select audio social signals, categorize them into different categories (using a LSTM autoencoder), and have users interact and validate the classification based on the emoji presented
 
 # Environment Setup:
-conda create --name CMPT419_FP python=3.8
-conda activate CMPT419_FP
-pip install -r requirements.txt
+1. '''conda create --name CMPT419_FP python=3.8'''
+2. '''conda activate CMPT419_FP'''
+3. '''pip install -r requirements.txt'''
+
+# Usage
+To run the project, use the following commands to show results based on :
+
+''' python src/train.py --autoencoder'''
+''' python src/train.py --DNN'''
+''' python src/train.py --CNN'''
+
+
+
+
 
 # Directories
 data/
@@ -22,10 +33,11 @@ data/
          dis_1.wav
          dis_2.wav
          ...
-    Smugness/
-         smug_1.wav
-         smug_2.wav
+    Confidence/
+         con_1.wav
+         con_2.wav
          ...
+     Other
 
 src/
      audio_helper.py
@@ -51,8 +63,10 @@ https://medium.com/@joshiprerak123/transform-your-audio-denoise-and-enhance-soun
 https://pythonguides.com/python-tkinter-image/
 
 
-# Potential ideas
-- add chroma features (chroma = librosa.feature.chroma_stft(y=audio, sr=sr))
-- add spectral contrast (contrast = librosa.feature.spectral_contrast(y=audio, sr=sr))
-- add zero crossing rate (zcr = librosa.feature.zero_crossing_rate(audio))
-- add deltas of MFCC (delta_mfcc = librosa.feature.delta(mfcc), delta2_mfcc = librosa.feature.delta(mfcc, order=2)))
+# Models
+
+1. LTSM Autoencoder
+
+2. LTSM Deep Neural Network
+
+3. CNN (spectrograms)
