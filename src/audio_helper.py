@@ -102,7 +102,10 @@ class AudioDataset(Dataset):
         self.labels = torch.tensor(labels, dtype=torch.long)
     
     def __len__(self):
+
         return len(self.data)
+    
     def __getitem__(self, idx):
-        return self.data[idx], self.data[idx] #input and target, no labels returned
+        
+        return self.data[idx], self.labels[idx] #input and target, no labels returned for autoencoder (NEED TO CHANGE FOR autoencoder vs DNN)
 

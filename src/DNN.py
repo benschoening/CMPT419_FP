@@ -22,5 +22,5 @@ class AudioDNN(nn.Module):
     def forward(self, x):
         out, _ = self.lstm(x)
         last_hidden = out[:, -1, :]
-        logits = self.fc(last_hidden)
-        return logits
+        fin = self.fc(last_hidden)
+        return fin
