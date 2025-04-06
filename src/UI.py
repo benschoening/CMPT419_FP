@@ -17,11 +17,14 @@ from tkinter import ttk
 
 window = tk.Tk()
 
-greeting = tk.Label(text="Welcome to the interactive ")
+greeting = tk.Label(text="Audio Player and Classification")
 greeting.pack(pady=100)
 
-img = Image.open('src/imgs/disgust_emoji.jpg')  
-img = ImageTk.PhotoImage(img)
+disgust_img = Image.open('src/imgs/disgust_emoji.jpg')  
+disgust_img = ImageTk.PhotoImage(disgust_img)
+
+label = tk.Label(window, image= disgust_img)
+label.pack(pady=20)
 
 def natural_sort_key(s):
     return [int(text) if text.isdigit() else text.lower() for text in re.split('([0-9]+)', s)]
