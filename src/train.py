@@ -36,10 +36,11 @@ mfcc_normalized = [scaler.transform(seq) for seq in mfcc]
 le = LabelEncoder()
 int_labels = le.fit_transform(labels)
 
-dataset = AudioDataset(mfcc_normalized, int_labels)
+dataset = AudioDataset1(mfcc_normalized, int_labels)
 
 dataloader = DataLoader(dataset, batch_size=8, shuffle=False)
 
+#-----------LTSM autoencoder (hyper parameters embedded)------------------------
 def train_autoencoder():
 
     #Hyper parameters (plus batch size above)
@@ -127,7 +128,7 @@ def train_autoencoder():
 
     plt.tight_layout()
     plt.show()
-
+#-------------------------------------------------------------------------------
 
 #------------------------------Data loader for DNN ------------------------------------------
 data_dir = 'data'
@@ -149,32 +150,33 @@ int_labels = le.fit_transform(labels)
 X_train, X_val, y_train, y_val = train_test_split(feats_normalized, int_labels, test_size=0.2, stratify=int_labels)
 
 #DataLoaders
-train_dataset = AudioDataset(X_train, y_train)
-test_dataset = AudioDataset(X_val, y_val)
+train_dataset = AudioDataset2(X_train, y_train)
+test_dataset = AudioDataset2(X_val, y_val)
 
 train_dataloader = DataLoader(train_dataset, batch_size=8, shuffle=True)
 val_dataloader = DataLoader(test_dataset, batch_size=8, shuffle=False)
 
 
-
+#----------------LTSM DNN (hyper parameters embedded)--------------------------
 def train_DNN():
 
     #Hyper parameters
     input_dim = 43 #number of features extracted from audio
     hidden_dim = 128
     num_layers = 4
-    n_classes = 4
+    n_classes = 5
     learning_rate = 0.0001
     epochs = 50
+    dropout = 0.2
 
     #model creation + GPU
-    model = AudioDNN(input_dim, hidden_dim, num_layers, n_classes)
+    model = AudioDNN(input_dim, hidden_dim, num_layers, n_classes, dropout)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate)
+    optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate) #regularization can be added ', weight_decay=1e-5'
 
 
     for i in range(epochs):
@@ -215,6 +217,6 @@ def train_DNN():
             all_labels.extend(labels.numpy())
 
     print(classification_report(all_labels, all_preds))
-
+#-------------------------------------------------------------------------------
 
 train_DNN()
