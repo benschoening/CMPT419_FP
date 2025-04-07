@@ -41,7 +41,7 @@ def spectrogram_wav(filepath, duration=5.0, sample_rate=22050, n_fft=2048, hop_l
 
     # Ensure audio is the correct length (pad or randomly crop)
     if len(audio) < target_length:
-        audio = np.pad(audio, (0, target_length - len(audio)), mode='constant')
+        audio = np.pad(audio, (0, target_length - len(audio)), mode="constant")
     else:
         max_start = len(audio) - target_length
         start_idx = random.randint(0, max_start)
@@ -57,7 +57,7 @@ def spectrogram_wav(filepath, duration=5.0, sample_rate=22050, n_fft=2048, hop_l
 def load_dataset_spectrogram(data_dir, classes, duration=5.0, sample_rate=22050, n_fft=2048, hop_length=512):
     specs = []
     labels = []
-    file_list = glob.glob(os.path.join(data_dir, '*/*.wav'))
+    file_list = glob.glob(os.path.join(data_dir, "*/*.wav"))
     for filepath in file_list:
         label = os.path.basename(os.path.dirname(filepath))
         
@@ -86,17 +86,28 @@ class AudioCNN(nn.Module):
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(2),
+            #nn.Dropout(0.2),
+            
             nn.Conv2d(16, 32, kernel_size=3, padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.MaxPool2d(2),
+            #nn.Dropout(0.2),
+            
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            #nn.Dropout(0.2)
         )
 
         self.adaptive_pool = nn.AdaptiveAvgPool2d((8, 8))
         self.fc_layers = nn.Sequential(
-            nn.Linear(32 * 8 * 8, 128),
+            nn.Linear(64 * 8 * 8, 128),
             nn.ReLU(),
-            nn.Linear(128, num_classes)
+            #nn.Dropout(0.2),
+            nn.Linear(128, num_classes),
+
         )
     
     def forward(self, x):
@@ -134,6 +145,11 @@ def train_model(model, dataloader, criterion, optimizer, num_epochs, device):
             avg_loss = running_loss / 10
             print(f"Epoch [{epoch + 1}/{num_epochs}], Batch [{i + 1}], Training Accuracy: {epoch_accuracy:.2f}%, Loss: {avg_loss:.4f}")
             running_loss = 0.0
+        
+        # epoch_loss = running_loss / len(dataloader)
+        # epoch_accuracy = 100 * correct_preds / total_samples
+        # print(f"Epoch [{epoch+1}/{num_epochs}] Training Accuracy: {epoch_accuracy:.2f}% Loss: {epoch_loss:.4f}")
+
 
 # TRAINING AND TESTING
 if __name__ == "__main__":
@@ -170,9 +186,9 @@ if __name__ == "__main__":
     model = AudioCNN(num_classes).to(device)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.00075)
 
-    num_epochs = 15
+    num_epochs = 10
     train_model(model, train_loader, criterion, optimizer, num_epochs, device)
 
     model.eval()
@@ -214,8 +230,10 @@ with torch.no_grad():
 
     cm = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(8,6))
-    sns.heatmap(cm, annot=True, fmt='d', xticklabels=class_names, yticklabels=class_names, cmap='Blues')
+    sns.heatmap(cm, annot=True, fmt="d", xticklabels=class_names, yticklabels=class_names, cmap="Blues")
     plt.title("Confusion Matrix")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
     plt.savefig("results/cnn_confusion_matrix.png")
+    
+torch.save(model.state_dict(), "models/audio_cnn_weights.pth")
