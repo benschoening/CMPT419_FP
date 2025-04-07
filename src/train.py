@@ -14,10 +14,11 @@ from sklearn.preprocessing import LabelEncoder
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-from sklearn.metrics import adjusted_rand_score, silhouette_score
+from sklearn.metrics import adjusted_rand_score, silhouette_score, confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
+import seaborn as sns
 #/imports
 
 #-----------------------Data loader for autoencoder--------------------------------------
@@ -36,15 +37,16 @@ mfcc_normalized = [scaler.transform(seq) for seq in mfcc]
 le = LabelEncoder()
 int_labels = le.fit_transform(labels)
 
-dataset = AudioDataset(mfcc_normalized, int_labels)
+dataset = AudioDataset1(mfcc_normalized, int_labels)
 
 dataloader = DataLoader(dataset, batch_size=8, shuffle=False)
 
+#-----------LTSM autoencoder (hyper parameters embedded)------------------------
 def train_autoencoder():
 
     #Hyper parameters (plus batch size above)
     learning_rate = 0.001
-    epoch = 10
+    epoch = 15
     num_feats = 43 #32 with chroma, 39 with contrast + chroma, 43 for all (displayed as n_mfcc in other files)
     seq_len = 216  #dependent on duration
     hidden_dim = 64
@@ -127,7 +129,7 @@ def train_autoencoder():
 
     plt.tight_layout()
     plt.show()
-
+#-------------------------------------------------------------------------------
 
 #------------------------------Data loader for DNN ------------------------------------------
 data_dir = 'data'
@@ -143,38 +145,39 @@ feats_normalized = [scaler.transform(seq) for seq in mfcc]
 
 #Encoding string labels to int vals
 le = LabelEncoder()
-int_labels = le.fit_transform(labels)
+int_labels = le.fit_transform(labels) 
 
 #Train-Split
 X_train, X_val, y_train, y_val = train_test_split(feats_normalized, int_labels, test_size=0.2, stratify=int_labels)
 
 #DataLoaders
-train_dataset = AudioDataset(X_train, y_train)
-test_dataset = AudioDataset(X_val, y_val)
+train_dataset = AudioDataset2(X_train, y_train)
+test_dataset = AudioDataset2(X_val, y_val)
 
 train_dataloader = DataLoader(train_dataset, batch_size=8, shuffle=True)
 val_dataloader = DataLoader(test_dataset, batch_size=8, shuffle=False)
 
 
-
+#----------------LTSM DNN (hyper parameters embedded)--------------------------
 def train_DNN():
 
     #Hyper parameters
     input_dim = 43 #number of features extracted from audio
     hidden_dim = 128
     num_layers = 4
-    n_classes = 4
-    learning_rate = 0.0001
+    n_classes = 5
+    learning_rate = 0.0010
     epochs = 50
+    dropout = 0.2
 
     #model creation + GPU
-    model = AudioDNN(input_dim, hidden_dim, num_layers, n_classes)
+    model = AudioDNN(input_dim, hidden_dim, num_layers, n_classes, dropout)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate)
+    optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate) #regularization can be added ', weight_decay=1e-5'
 
 
     for i in range(epochs):
@@ -212,9 +215,27 @@ def train_DNN():
             outputs = model(inputs)
             preds = torch.argmax(outputs, dim=1)
             all_preds.extend(preds.cpu().numpy())
-            all_labels.extend(labels.numpy())
+            all_labels.extend(labels.cpu().numpy())
 
-    print(classification_report(all_labels, all_preds))
+    #Convert to numpy arrays
+    all_labels = np.array(all_labels)
+    all_preds = np.array(all_preds)
+
+    class_names = le.classes_
+
+    print(classification_report(all_labels, all_preds, target_names=class_names))
+
+    #CONFUSION MATRIX
+    cm = confusion_matrix(all_labels, all_preds)
+    plt.figure(figsize=(8,6))
+    sns.heatmap(cm, annot=True, fmt='d', xticklabels=class_names, yticklabels=class_names, cmap='Blues')
+    plt.title("Confusion Matrix")
+    plt.ylabel("True Label")
+    plt.xlabel("Predicted Label")
+    plt.savefig("results/DNN_confusion_matrix.png")
 
 
-train_DNN()
+#-------------------------------------------------------------------------------
+
+
+train_autoencoder()

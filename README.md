@@ -62,7 +62,10 @@ Dataset key here
 - implementation of 3 different models to find most effective classification
 
 # Sources
-https://medium.com/@joshiprerak123/transform-your-audio-denoise-and-enhance-sound-quality-with-python-using-pedalboard-24da7c1df042
+1. https://medium.com/@joshiprerak123/transform-your-audio-denoise-and-enhance-sound-quality-with-python-using-pedalboard-24da7c1df042
 https://pythonguides.com/python-tkinter-image/
+2. https://scikit-learn.org/stable/index.html
+3. https://towardsdatascience.com/what-is-stratified-cross-validation-in-machine-learning-8844f3e7ae8e/
+
 
 
