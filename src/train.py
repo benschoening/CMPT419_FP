@@ -129,6 +129,19 @@ def train_autoencoder():
 
     plt.tight_layout()
     plt.show()
+    
+    #cm = confusion_matrix(int_labels, cluster_labels)
+
+    # # Plot the confusion matrix heatmap.
+    # plt.figure(figsize=(8, 6))
+    # sns.heatmap(cm, annot=True, fmt="d", cmap='Blues')
+    # plt.xlabel("Predicted Cluster")
+    # plt.ylabel("True Label")
+    # plt.title("Confusion Matrix")
+    # plt.savefig("results/autoencoder_confusion_matrix")
+    
+    torch.save(model.state_dict(), "models/audio_autoencoder.pth")
+    
 #-------------------------------------------------------------------------------
 
 #------------------------------Data loader for DNN ------------------------------------------
@@ -233,9 +246,13 @@ def train_DNN():
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
     plt.savefig("results/DNN_confusion_matrix.png")
+    
+    torch.save(model.state_dict(), "models/audio_dnn.pth")
 
 
 #-------------------------------------------------------------------------------
 
 
 train_autoencoder()
+
+train_DNN()
