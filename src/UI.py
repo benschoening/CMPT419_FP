@@ -85,6 +85,18 @@ def predict_audio():
     with torch.no_grad():
         output = current_model(spec_tensor)
         predicted_index = torch.argmax(output, dim=1).item()
+        # for other
+        # probabilities = torch.softmax(output, dim=1)
+        # max, predicted_index = torch.max(probabilities, dim=1)
+    
+    # print("Confidence: ", max.item())
+    
+    # confidence_threshold = 0.4
+    # if max.item() < confidence_threshold:
+    #     predicted_label = "Other"
+    # else:
+    #     predicted_label = classes[predicted_index.item()]
+        
     predicted_label = classes[predicted_index]
     print("Predicted Label:", predicted_label)
     
