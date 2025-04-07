@@ -53,7 +53,7 @@ def load_model(model_path):
     return model
 
 # DEFAULT MODEL
-current_model = load_model("models/audio_cnn_weights.pth")
+current_model = load_model("models/audio_cnn_67.pth")
 
 left_frame = tk.Frame(window)
 left_frame.grid(row=0, column=0, padx=20, pady=20)
