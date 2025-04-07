@@ -30,7 +30,7 @@ if __name__ == "__main__":
     #print(torch.zeros(1).cuda())
 
     data_dir = "data" 
-    classes = ["Disgust", "Nervousness", "Confidence", "Uncertainty"]
+    classes = ["Confidence", "Disgust", "Nervousness",  "Other", "Uncertainty"]
     specs, labels = load_dataset_spectrogram(data_dir, classes, duration=5.0)
 
     label_encoder = LabelEncoder()
@@ -61,9 +61,9 @@ if __name__ == "__main__":
     model = AudioCNN(num_classes).to(device)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.00075   )
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    num_epochs = 10
+    num_epochs = 8
     train_model(model, train_loader, criterion, optimizer, num_epochs, device)
 
     model.eval()

@@ -28,14 +28,14 @@ import time
 window = tk.Tk()
 window.title("Audio Player and Classification")
 
-classes = ["Disgust", "Nervousness", "Confidence", "Uncertainty"]
+classes = ["Confidence", "Disgust", "Nervousness",  "Other", "Uncertainty"]
 
 emoji_map = {
-    "Disgust": "src/imgs/disgust_emoji.jpg",
-    "Nervousness": "src/imgs/nervous_emoji.png",
     "Confidence": "src/imgs/confident_emoji.png",
     "Uncertainty": "src/imgs/uncertain_emoji.png",
-    "Other": "src/imgs/other_emoji.png"
+    "Nervousness": "src/imgs/nervous_emoji.png",
+    "Other": "src/imgs/other_emoji.png",
+    "Disgust": "src/imgs/disgust_emoji.jpg"
 }
 
 preloaded_emojis = {}
@@ -96,7 +96,7 @@ def predict_audio():
     
     #print("Confidence: ", max.item())
     
-    confidence_threshold = 0.4
+    confidence_threshold = 0.7
     if max.item() < confidence_threshold:
         predicted_label = "Other"
     else:
@@ -195,7 +195,7 @@ def start_recording():
     # Open the input stream with the callback.
     record_stream = sd.InputStream(samplerate=samplerate, channels=channels, callback=record_callback)
     record_stream.start()
-    print("Recording started:", recorded_file)
+    #print("Recording started:", recorded_file)
     
 def normalize_audio(file_path):
     data, sr = sf.read(file_path)
@@ -222,8 +222,8 @@ def stop_recording():
 
     normalize_audio(recorded_file)
 
-    audio_options.append(recorded_file)
-    audio_options.sort(key=natural_sort_key)
+    audio_options.insert(0, recorded_file)
+    #audio_options.sort(key=natural_sort_key)
     audio_combobox['values'] = audio_options
 
 def toggle_record():
