@@ -26,7 +26,7 @@ from CNN_helper import spectrogram_wav, AudioDataset, AudioCNN, load_dataset_spe
 # TRAINING AND TESTING
 if __name__ == "__main__":
 
-    print(torch.cuda.is_available())
+    #print(torch.cuda.is_available())
     #print(torch.zeros(1).cuda())
 
     data_dir = "data" 
