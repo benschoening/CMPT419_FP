@@ -61,7 +61,7 @@ if __name__ == "__main__":
     model = AudioCNN(num_classes).to(device)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.00075)
+    optimizer = optim.Adam(model.parameters(), lr=0.00075   )
 
     num_epochs = 10
     train_model(model, train_loader, criterion, optimizer, num_epochs, device)
@@ -111,4 +111,4 @@ with torch.no_grad():
     plt.xlabel("Predicted Label")
     plt.savefig("results/cnn_confusion_matrix.png")
     
-torch.save(model.state_dict(), "models/audio_cnn_weights.pth")
+torch.save(model.state_dict(), "models/audio_cnn.pth")
