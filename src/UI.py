@@ -17,6 +17,11 @@ from tkinter import ttk
 from CNN_helper import AudioCNN, spectrogram_wav
 import torch
 import numpy as np
+
+import sounddevice as sd
+import soundfile as sf
+import time
+
 #/imports
 
 # SETUP
@@ -84,18 +89,18 @@ def predict_audio():
 
     with torch.no_grad():
         output = current_model(spec_tensor)
-        predicted_index = torch.argmax(output, dim=1).item()
+        #predicted_index = torch.argmax(output, dim=1).item()
         # for other
-        # probabilities = torch.softmax(output, dim=1)
-        # max, predicted_index = torch.max(probabilities, dim=1)
+        probabilities = torch.softmax(output, dim=1)
+        max, predicted_index = torch.max(probabilities, dim=1)
     
-    # print("Confidence: ", max.item())
+    #print("Confidence: ", max.item())
     
-    # confidence_threshold = 0.4
-    # if max.item() < confidence_threshold:
-    #     predicted_label = "Other"
-    # else:
-    #     predicted_label = classes[predicted_index.item()]
+    confidence_threshold = 0.4
+    if max.item() < confidence_threshold:
+        predicted_label = "Other"
+    else:
+        predicted_label = classes[predicted_index.item()]
         
     predicted_label = classes[predicted_index]
     print("Predicted Label:", predicted_label)
@@ -164,6 +169,72 @@ def load_selected_model():
 load_model_button = tk.Button(right_frame, text="Load Model", font=("Helvetica", 14), command=load_selected_model)
 load_model_button.pack(pady=10)
 
+recording = False
+record_stream = None
+file_writer = None
+recorded_file = None
+samplerate = 22050
+channels = 1
 
+def record_callback(indata, frames, time_info, status):
+    if status:
+        print(status)
+    global file_writer
+    if file_writer:
+        file_writer.write(indata)
+
+def start_recording():
+    global recording, record_stream, file_writer, recorded_file
+    recording = True
+    recorded_folder = os.path.join("data", "Recorded")
+    os.makedirs(recorded_folder, exist_ok=True)
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    recorded_file = os.path.join(recorded_folder, f"recorded_{timestamp}.wav")
+    # Open a sound file in write mode.
+    file_writer = sf.SoundFile(recorded_file, mode='w', samplerate=samplerate, channels=channels)
+    # Open the input stream with the callback.
+    record_stream = sd.InputStream(samplerate=samplerate, channels=channels, callback=record_callback)
+    record_stream.start()
+    print("Recording started:", recorded_file)
+    
+def normalize_audio(file_path):
+    data, sr = sf.read(file_path)
+    # Compute the maximum absolute amplitude.
+    peak = np.max(np.abs(data))
+
+    if peak == 0:
+        return
+
+    scaling_factor = 0.99 / peak
+    normalized_data = data * scaling_factor
+    # Write the normalized audio back to file.
+    sf.write(file_path, normalized_data, sr)
+
+    
+def stop_recording():
+    global recording, record_stream, file_writer
+    if record_stream is not None:
+        record_stream.stop()
+        record_stream.close()
+    if file_writer is not None:
+        file_writer.close()
+    recording = False
+
+    normalize_audio(recorded_file)
+
+    audio_options.append(recorded_file)
+    audio_options.sort(key=natural_sort_key)
+    audio_combobox['values'] = audio_options
+
+def toggle_record():
+    if not recording:
+        record_button.config(text="Stop Recording")
+        start_recording()
+    else:
+        stop_recording()
+        record_button.config(text="Record Audio")
+        
+record_button = tk.Button(right_frame, text="Record Audio", font=("Helvetica", 14), command=toggle_record)
+record_button.pack(pady=20, anchor="se")
 
 window.mainloop()
