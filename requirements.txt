@@ -4,3 +4,10 @@ torch
 scipy
 matplotlib
 tensorflow
+Image
+ImageTk
+sounddevice
+soundfile
+seaborn
+scikit-learn
+matplotlib
