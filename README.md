@@ -51,21 +51,22 @@ data/
 
 -    results/
           photos
--     src/
-     audio_helper.py, autoencoder.py, DNN.py, train.py, UI.py, CNN_helper.py, CNN_train.py
+-     src/ audio_helper.py, autoencoder.py, DNN.py, train.py, UI.py, CNN_helper.py, CNN_train.py
 
 - requirements.txt
 
 
 ### Data Description:
-Provided in dataset_key.pdf
+Data used for training and validation is provided in the data/ directory, more information on the data is provided in dataset_key.pdf, and the final report
+
+*Be careful of using UI and recording audio, only data that should be in directory is the 5 training sets after use of UI
 
 ### Challenges
 1. Data availability: finding and collecting data proved to be challenging, by the amount of time to find specific examples of each social signal. One example of this challenge is not being able to find enough data for 'smugness', where we had to change our social signal to a more broader signal of confidence
 2. Classification: had to use different hyperparameters, models, data, and audio techniques to find best result
 
 ### Changes made during project
-- Social Signal of 'smugness' to 'confidence'
+- Social Signal of 'smugness' to 'confidence' due to lack of effective methods for finding dataset key
 - implementation of 3 different models to find most effective classification
 
 # Sources

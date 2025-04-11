@@ -178,7 +178,7 @@ def train_DNN():
     input_dim = 43 #number of features extracted from audio
     hidden_dim = 128
     num_layers = 4
-    n_classes = 4
+    n_classes = 5
     learning_rate = 0.0010
     epochs = 50
     dropout = 0.2
