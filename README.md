@@ -9,11 +9,17 @@ Improving audio-text communication: Using AI models to classify social signals a
 3. '''pip install -r requirements.txt'''
 
 ### Usage
-To run the project, use the following commands to show results based on :
+To run the User Interactive aspect of this project, use the following commands to show results based on :
 
-- ''' python src/UI.py --autoencoder'''
-- ''' python src/UI.py --DNN'''
-- ''' python src/UI.py --CNN'''
+- "python src/UI.py"
+
+To run and see the results of each individual model use the commands:
+
+For LSTM DNN and LSTM Autoencoder use:
+- "python src/train.py 
+
+For Spectrogram CNN use:
+- "python src/CNN_train.py
 
 ### Directories
 data/
@@ -39,8 +45,9 @@ data/
           ...
 
 -    results/
+          photos
 - src/
-     audio_helper.py, autoencoder.py, DNN.py, train.py, UI.py
+     audio_helper.py, autoencoder.py, DNN.py, train.py, UI.py, CNN_helper.py, CNN_train.py
 
 - requirements.txt
 
@@ -51,7 +58,7 @@ data/
 
 
 ### Data Description:
-Dataset key here
+Provided in dataset_key.pdf
 
 ### Challenges
 1. Data availability: finding and collecting data proved to be challenging, by the amount of time to find specific examples of each social signal. One example of this challenge is not being able to find enough data for 'smugness', where we had to change our social signal to a more broader signal of confidence
@@ -66,6 +73,7 @@ Dataset key here
 https://pythonguides.com/python-tkinter-image/
 2. https://scikit-learn.org/stable/index.html
 3. https://towardsdatascience.com/what-is-stratified-cross-validation-in-machine-learning-8844f3e7ae8e/
+4. https://librosa.org/doc/main/feature.html
 
 
 
