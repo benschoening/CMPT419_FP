@@ -8,6 +8,11 @@ Improving audio-text communication: Using AI models to classify social signals a
 2. '''conda activate CMPT419_FP'''
 3. '''pip install -r requirements.txt'''
 
+### Models
+1. LSTM Autoencoder
+2. LSTM DNN
+3. Spectrogram CNN
+
 ### Usage
 To run the User Interactive aspect of this project, use the following commands to show results based on :
 
@@ -39,22 +44,17 @@ data/
          con_1.wav,
          con_2.wav,
          ...
--     Other/
+-    Other/
           oth_1.wav,
           oth_2.wav,
           ...
 
 -    results/
           photos
-- src/
+-     src/
      audio_helper.py, autoencoder.py, DNN.py, train.py, UI.py, CNN_helper.py, CNN_train.py
 
 - requirements.txt
-
-### Models
-1. LTSM Autoencoder
-2. LTSM Deep Neural Network
-3. CNN (spectrograms)
 
 
 ### Data Description:
